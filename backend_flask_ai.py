@@ -1,11 +1,13 @@
 import openai
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-client = openai.OpenAI(api_key="JOUW_OPENAI_API_KEY")
+# Haal de API-key op uit de environment variables
+client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 @app.route("/generate-email", methods=["POST"])
 def generate_email():
@@ -28,7 +30,7 @@ def generate_email():
     )
 
     email_text = response.choices[0].message.content
-    return jsonify({"email": email_text})  # LET OP: correcte inspringing!
+    return jsonify({"email": email_text})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
