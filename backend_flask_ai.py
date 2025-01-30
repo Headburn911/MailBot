@@ -6,7 +6,7 @@ app = Flask(__name__)
 CORS(app)
 
 # OpenAI API Key instellen (vervang dit met jouw API-key)
-openai.api_key = "JOUW_OPENAI_API_KEY"
+client = openai.OpenAI(api_key="JOUW_OPENAI_API_KEY")
 
 @app.route("/generate-email", methods=["POST"])
 def generate_email():
@@ -20,15 +20,15 @@ def generate_email():
     De toon moet {tone} zijn en de e-mail is bedoeld voor {recipient}.
     """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "Je bent een AI-assistent die helpt bij het schrijven van professionele e-mails."},
-            {"role": "user", "content": prompt}
-        ]
-    )
-    
-    email_text = response['choices'][0]['message']['content']
+    response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {"role": "system", "content": "Je bent een AI-assistent die helpt bij het schrijven van professionele e-mails."},
+        {"role": "user", "content": prompt}
+    ]
+)
+
+email_text = response.choices[0].message.content
     return jsonify({"email": email_text})
 
 if __name__ == "__main__":
