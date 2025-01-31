@@ -1,4 +1,4 @@
-import openai
+import google.generativeai as genai
 import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -6,8 +6,11 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Haal de API-key op uit de environment variables
-client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Gebruik de API-key als omgevingsvariabele
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Stel de API-key in voor Google Gemini
+genai.configure(api_key=GEMINI_API_KEY)
 
 @app.route("/generate-email", methods=["POST"])
 def generate_email():
@@ -21,16 +24,10 @@ def generate_email():
     De toon moet {tone} zijn en de e-mail is bedoeld voor {recipient}.
     """
 
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Je bent een AI-assistent die helpt bij het schrijven van professionele e-mails."},
-            {"role": "user", "content": prompt}
-        ]
-    )
+    model = genai.GenerativeModel("gemini-pro")
+    response = model.generate_content(prompt)
 
-    email_text = response.choices[0].message.content
-    return jsonify({"email": email_text})
+    return jsonify({"email": response.text})
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
