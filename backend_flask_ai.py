@@ -22,7 +22,7 @@ def generate_email():
     """
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Je bent een AI-assistent die helpt bij het schrijven van professionele e-mails."},
             {"role": "user", "content": prompt}
